@@ -22,17 +22,29 @@ class AddProductViewModel: BaseViewModel {
     
     //MARK: Add
     func addProduct() {
+        
+        startLoading()
+        
         let product: Product = Product()
-        product.image = ""
         product.name = self.productName
         product.type = self.productType
         product.price = Double(self.price)
         product.tax = Double(self.tax)
-                
+        
+        var images: [UIImage] = []
+        
+        if let image = selectedImage {
+            images.append(image)
+        }
+        
         //Save data locally
-        ProductRepository.shared.saveProduct(product) { success in
-            if success {
-                self.showMessage(type: .success, message: "Product Added Successfully")
+        ProductRepository.shared.saveProduct(product, images) { success in
+            self.stopLoading()
+            
+            if (success) {
+                DispatchQueue.main.async {
+                    self.showMessage(type: .success, message: "Product Added Successfully")
+                }                
             }
         }
     }

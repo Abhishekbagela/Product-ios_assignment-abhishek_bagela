@@ -14,6 +14,7 @@ class Product: Codable {
     var name: String?
     var type: String?
     var tax: Double?
+    var liked: Bool?
 
     enum CodingKeys: String, CodingKey {
         case image = "image"

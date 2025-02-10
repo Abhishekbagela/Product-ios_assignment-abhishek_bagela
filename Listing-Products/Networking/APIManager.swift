@@ -52,7 +52,7 @@ final class APIManager {
     }
     
     // MARK: - FORM DATA - Send Data (POST Request)
-    func sendFormData<T: Codable>(to url: URL?, data: T, completion: @escaping (Result<T, APIError>) -> Void) {
+    func sendFormData<T: Codable>(to url: URL?, data: T, images: [Data]?, completion: @escaping (Result<T, APIError>) -> Void) {
         guard let url = url else {
             completion(.failure(.invalidURL))
             return
@@ -73,6 +73,8 @@ final class APIManager {
         var body = Data()
         
         for (key, value) in dictionaryData {
+            print("zzzz sendFormData \(key) - \(value)")
+            
             if let stringValue = value as? String {
                 body.append("--\(boundary)\r\n".data(using: .utf8)!)
                 body.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
@@ -81,6 +83,21 @@ final class APIManager {
                 body.append("--\(boundary)\r\n".data(using: .utf8)!)
                 body.append("Content-Disposition: form-data; name=\"\(key)\"\r\n\r\n".data(using: .utf8)!)
                 body.append("\(numberValue)\r\n".data(using: .utf8)!)
+            }
+        }
+        
+        // Append Images
+        
+        if let images = images {
+            for (index, imageData) in images.enumerated() {
+                let filename = "image\(index).jpg"
+                let fieldName = "files[]"  // Adjust field name as required by the server
+                
+                body.append("--\(boundary)\r\n".data(using: .utf8)!)
+                body.append("Content-Disposition: form-data; name=\"\(fieldName)\"; filename=\"\(filename)\"\r\n".data(using: .utf8)!)
+                body.append("Content-Type: file\r\n\r\n".data(using: .utf8)!)
+                body.append(imageData) //image/jpeg
+                body.append("\r\n".data(using: .utf8)!)
             }
         }
         
@@ -111,55 +128,7 @@ final class APIManager {
             } catch {
                 completion(.failure(.decodingError(error)))
             }
-
-        }
-        
-        task.resume()
-    }
-    
-    // MARK: - JSON Send Data (PUT Request)
-    func sendJsonData<T: Encodable>(to urlString: String, data: T, completion: @escaping (Result<Void, APIError>) -> Void) {
-        guard let url = URL(string: urlString) else {
-            completion(.failure(.invalidURL))
-            return
-        }
-        
-        var request = URLRequest(url: url)
-        request.httpMethod = "POST"
-        request.setValue("form-data", forHTTPHeaderField: "Content-Type")
-        request.setValue("form-data", forHTTPHeaderField: "Accept")
-        
-        do {
-            let jsonData = try JSONEncoder().encode(data)
             
-            //MARK: Debug
-            if let jsonString = String(data: jsonData, encoding: .utf8) {
-                print("JSON Request Body: \(jsonString)")
-            }
-            request.httpBody = jsonData
-        } catch {
-            completion(.failure(.encodingError(error)))
-            return
-        }
-        
-        let task = URLSession.shared.dataTask(with: request) { data, response, error in
-            if let error = error {
-                completion(.failure(.requestFailed(error)))
-                return
-            }
-            
-            guard let httpResponse = response as? HTTPURLResponse else {
-                completion(.failure(.invalidResponse))
-                return
-            }
-            
-            if !(200...299).contains(httpResponse.statusCode) {
-                print("Server Error: \(httpResponse.statusCode)") // Debugging
-                completion(.failure(.serverError(httpResponse.statusCode)))
-                return
-            }
-            
-            completion(.success(()))
         }
         
         task.resume()

@@ -18,7 +18,7 @@ struct MainApp: App {
         WindowGroup {
             NavigationStack(path: $navigationRouter.path) {
                 RootView {
-                    ProductListView()
+                    SplashView()
                         .onAppear {
                             //MARK: Sync data with server and update local
                             if (networkMonitor.isConnected) {

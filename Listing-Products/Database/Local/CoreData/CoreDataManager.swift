@@ -14,22 +14,24 @@ class CoreDataManager {
     let persistentContainer: NSPersistentContainer
     
     private init() {
-        
         persistentContainer = NSPersistentContainer(name: "ProductModel")
+        
+        //        NOTE: ☠️ Use it wisely(Only in Dev Mode)
+        //        self.deleteStore()
+        
+        //TODO: Need to configure light and heavy weight migration
+        
+        // Enable automatic lightweight migration
+        let description = self.persistentContainer.persistentStoreDescriptions.first
+        description?.shouldMigrateStoreAutomatically = true
+        description?.shouldInferMappingModelAutomatically = true
+        
         persistentContainer.loadPersistentStores { (_, error) in
             if let error = error {
                 fatalError("Failed to load Core Data stack: \(error)")
             }
-            
-//            NOTE: ☠️ Use it wisely
-//            deleteStore()
-            
-            // Enable automatic lightweight migration
-            let description = self.persistentContainer.persistentStoreDescriptions.first
-            description?.shouldMigrateStoreAutomatically = true
-            description?.shouldInferMappingModelAutomatically = true
         }
-          
+        
     }
     
     var context: NSManagedObjectContext {
@@ -53,5 +55,10 @@ class CoreDataManager {
         } catch {
             print("Failed to delete store: \(error)")
         }
+    }
+    
+    func entityExists(_ entityName: String) -> Bool {
+        let entities = persistentContainer.managedObjectModel.entities
+        return entities.contains { $0.name == entityName }
     }
 }

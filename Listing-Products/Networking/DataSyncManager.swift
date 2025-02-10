@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import UIKit
 
 class DataSyncManager {
     
@@ -17,30 +18,39 @@ class DataSyncManager {
         let unsyncedProducts = ProductRepository.shared.fetchUnsyncedProducts()
         
         guard !unsyncedProducts.isEmpty else {
-            print("No unsynced data found.")
+            debugPrint("No unsynced data found.")
             return
         }
         
         for localProduct in unsyncedProducts {
             
             let newProduct = Product()
-            newProduct.image = localProduct.image
             newProduct.price = localProduct.price
             newProduct.name = localProduct.name
             newProduct.type = localProduct.type
             newProduct.tax = localProduct.tax
+            var decodedImages: [Data] = []
             
-            APIManager.shared.sendFormData(to: EndPoints.addProductURL(), data: newProduct) { (result: Result<Product, APIError>) in
+            if let imageData = localProduct.images {
+                do {
+                    decodedImages = try JSONDecoder().decode([Data].self, from: imageData)
+                    debugPrint("Successfully decoded \(decodedImages.count) for product:")
+                } catch {
+                    debugPrint("Failed to decode images: \(error.localizedDescription)")
+                }
+            }
+            
+            APIManager.shared.sendFormData(to: EndPoints.addProductURL(), data: newProduct, images: decodedImages) { (result: Result<Product, APIError>) in
                 
                 switch result {
                 case .success(let product):
-                    print("Synced Product with server ID: \(product.id ?? "").")
+                    debugPrint("Synced Product with server ID: \(product.id ?? "").")
                     
                     ProductRepository.shared.markProductAsSynced(localProduct.id, serverId: product.id)
                     completion(true)
                 case .failure(_):
                     completion(false)
-                    print("")
+                    debugPrint("")
                 }
             }
         

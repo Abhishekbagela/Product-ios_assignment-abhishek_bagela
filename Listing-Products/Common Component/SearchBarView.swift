@@ -43,7 +43,7 @@ struct SearchBarView: View {
                         isEditing = true
                     }
                 }
-                .onChange(of: text) { _,newValue in
+                .onChange(of: text) { newValue in
                     withAnimation {
                         isEditing = !newValue.isEmpty  // Set isEditing to true when text is not empty
                     }

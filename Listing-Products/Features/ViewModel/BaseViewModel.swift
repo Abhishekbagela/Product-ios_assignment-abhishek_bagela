@@ -12,7 +12,7 @@ class BaseViewModel: ObservableObject {
     @Published var message: String = ""
     
     @Published var showError: Bool = false
-    @Published var loading: Bool = true
+    @Published var loading: Bool = false
     
     enum MessageType: String {
         case success = "Success"

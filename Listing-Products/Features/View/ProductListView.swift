@@ -23,11 +23,10 @@ struct ProductListView: View {
                     ScrollView {
                         LazyVStack {
                             ForEach(viewModel.filterProducts(viewModel.products, searchText: viewModel.searchText) ?? [], id: \.id) { product in
-                                ProductListItemView(product: product)
+                                ProductView(product: product, viewModel: viewModel)
                             }
                         }
                     }
-                    .padding(.top, 5)
                 } else {
                     Spacer()
                 }
@@ -51,8 +50,11 @@ struct ProductListView: View {
         .alert(isPresented: $viewModel.showError) {
             Alert(title: Text(viewModel.msgTitle), message: Text(viewModel.message))
         }
+        .refreshable {
+            viewModel.getProducts()
+        }
     }
-        
+    
 }
 
 #Preview {

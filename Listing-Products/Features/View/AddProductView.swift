@@ -19,27 +19,30 @@ struct AddProductView: View {
                 VStack(spacing: 20) {
                     // Product Image Section
                     Button(action: { viewModel.isImagePickerPresented.toggle() }) {
-                        if let image = viewModel.selectedImage {
-                            Image(uiImage: image)
-                                .resizable()
-                                .scaledToFill()
-                                .frame(width: 150, height: 150)
-                                .clipShape(RoundedRectangle(cornerRadius: 15))
-                                .overlay(RoundedRectangle(cornerRadius: 15).stroke(Color.gray, lineWidth: 1))
-                        } else {
-                            VStack {
-                                Image(systemName: "photo.fill")
+                        ZStack {
+                            if let image = viewModel.selectedImage {
+                                Image(uiImage: image)
                                     .resizable()
-                                    .scaledToFit()
-                                    .frame(width: 60, height: 60)
-                                    .foregroundColor(.gray)
-                                Text("Tap to add image")
-                                    .foregroundColor(.gray)
-                                    .font(.footnote)
+                                    .scaledToFill()
+                                    .frame(width: 150, height: 150)
+                                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                                    .overlay(RoundedRectangle(cornerRadius: 15).stroke(Color.gray, lineWidth: 1))
+                            } else {
+                                VStack {
+                                    Image(systemName: "photo.fill")
+                                        .resizable()
+                                        .scaledToFit()
+                                        .frame(width: 60, height: 60)
+                                        .foregroundColor(.gray)
+                                    Text("Tap to add image")
+                                        .foregroundColor(.gray)
+                                        .font(.footnote)
+                                }
+                                .frame(width: 150, height: 150)
+                                .background(Color(.systemGray6))
+                                .clipShape(RoundedRectangle(cornerRadius: 15))
                             }
-                            .frame(width: 150, height: 150)
-                            .background(Color(.systemGray6))
-                            .clipShape(RoundedRectangle(cornerRadius: 15))
+                            
                         }
                     }
                     .padding(.top, 20)
@@ -55,7 +58,7 @@ struct AddProductView: View {
                         TextField("Enter product name", text: $viewModel.productName)
                             .padding()
                             .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-                            .onChange(of: viewModel.productName) { _,_ in
+                            .onChange(of: viewModel.productName) { _ in
                                 viewModel.validateProductName()
                             }
                         if let productNameError = viewModel.errorMessages["productName"] {
@@ -83,7 +86,7 @@ struct AddProductView: View {
                             .keyboardType(.decimalPad)
                             .padding()
                             .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-                            .onChange(of: viewModel.price) { _,_ in
+                            .onChange(of: viewModel.price) { _ in
                                 viewModel.validatePrice()
                             }
                         if let priceError = viewModel.errorMessages["price"] {
@@ -99,7 +102,7 @@ struct AddProductView: View {
                             .keyboardType(.decimalPad)
                             .padding()
                             .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-                            .onChange(of: viewModel.tax) { _,_ in
+                            .onChange(of: viewModel.tax) { _ in
                                 viewModel.validateTax()
                             }
                         if let taxError = viewModel.errorMessages["tax"] {
@@ -132,7 +135,6 @@ struct AddProductView: View {
         .alert(isPresented: $viewModel.showError) {
             Alert(title: Text(viewModel.msgTitle), message: Text(viewModel.message))
         }
-        
     }
     
 }

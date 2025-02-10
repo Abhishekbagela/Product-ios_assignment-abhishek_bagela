@@ -11,12 +11,15 @@ class ProductListViewModel: BaseViewModel {
     
     @Published var searchText: String = ""
     @Published var products: [Product]? = nil
+    @Published var likedProducts: [Product] = []
+    
+    @Published var isAtBottom = false
     
     //MARK: Get
     func getProducts() {
         
         let url = EndPoints.getProductURL()
-
+        
         startLoading()
         
         APIManager.shared.fetchData(from: url) { (result: Result<[Product], APIError>) in
@@ -26,13 +29,45 @@ class ProductListViewModel: BaseViewModel {
                 
                 switch result {
                 case .success(let products):
-                    self.products = products
+                    self.showLikedProductOnTop(products)
                 case .failure(_):
                     self.showMessage(type: .error, message: "Something wend wrong")
                 }
             }
         }
+    }
         
+    func resetProductsList() {
+        self.likedProducts = []
+        self.products = []
+    }
+    
+    func showLikedProductOnTop(_ products: [Product]) {
+        resetProductsList()
+        
+        var nonLiked = [Product]()
+        
+        let likedProducts = ProductRepository.shared.fetchLikedProducts()
+        
+        if (likedProducts.isEmpty) {
+            self.products = products
+        } else {
+            products.forEach { product in
+                if likedProducts.contains(where: { $0.image == product.image }) {
+                    let prd = product
+                    prd.liked = true
+                    self.likedProducts.append(prd)
+                    
+                } else {
+                    nonLiked.append(product)
+                }
+            }
+            
+            print("xxxx liked \(self.likedProducts.count)")
+            print("xxxx nonLiked \(nonLiked.count)")
+            
+            self.products = self.likedProducts + nonLiked
+        }
     }
     
     //MARK: Filter method
@@ -46,6 +81,6 @@ class ProductListViewModel: BaseViewModel {
             (String(format: "%.2f", product.price ?? 0.0).contains(searchText))
         }
     }
-
+    
 }
 

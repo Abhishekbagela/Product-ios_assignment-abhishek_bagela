@@ -1,5 +1,5 @@
 //
-//  ProductListItemView.swift
+//  ProductView.swift
 //  Listing-Products
 //
 //  Created by Abhishek Bagela on 29/01/25.
@@ -7,9 +7,9 @@
 
 import SwiftUI
 
-struct ProductListItemView: View {
+struct ProductView: View {
     let product: Product?
-    
+    @ObservedObject var viewModel: ProductListViewModel
     @State private var productImage: UIImage? = nil
     @State private var isLiked = false
     
@@ -17,31 +17,34 @@ struct ProductListItemView: View {
         VStack(spacing: 10) {
             ZStack(alignment: .topTrailing) {
                 productImageView
-                    .frame(width: 160, height: 160)
-                    .background(LinearGradient(gradient: Gradient(colors: [.white, Color.gray.opacity(0.1)]), startPoint: .top, endPoint: .bottom))
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
-                    .shadow(color: Color.black.opacity(0.1), radius: 6, x: 3, y: 3)
-                    .padding(.top, 8)
+                    .frame(width: 180, height: 180)
+                    .background(
+                        LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.2), .purple.opacity(0.2)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                    )
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
+                    .shadow(color: Color.black.opacity(0.15), radius: 8, x: 4, y: 6)
+                    .padding(.top, 10)
                 
                 Button(action: {
                     withAnimation(.easeInOut(duration: 0.3)) {
                         isLiked.toggle()
+                        updateLikedProducts()
                     }
                 }) {
                     Image(systemName: isLiked ? "heart.fill" : "heart")
-                        .font(.system(size: 22))
-                        .foregroundColor(isLiked ? .pink : .gray)
+                        .font(.system(size: 24))
+                        .foregroundColor(isLiked ? .red : .white)
                         .padding(12)
-                        .background(BlurView(style: .systemThinMaterial))
+                        .background(Color.black.opacity(0.5))
                         .clipShape(Circle())
-                        .shadow(radius: 3)
+                        .shadow(radius: 4)
                 }
-                .padding(10)
+                .padding(12)
             }
             
-            VStack(alignment: .leading, spacing: 6) {
+            VStack(alignment: .leading, spacing: 8) {
                 Text(product?.name ?? "Unknown Product")
-                    .font(.system(size: 18, weight: .bold, design: .rounded))
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
                     .foregroundColor(.primary)
                     .lineLimit(1)
                 
@@ -51,8 +54,8 @@ struct ProductListItemView: View {
                 
                 HStack {
                     Text("$\(String(format: "%.2f", product?.price ?? 0.00))")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundColor(.blue)
+                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .foregroundColor(.green)
                     
                     Spacer()
                     
@@ -61,18 +64,18 @@ struct ProductListItemView: View {
                         .foregroundColor(.gray)
                 }
             }
-            .padding(.horizontal, 12)
-            .padding(.bottom, 10)
+            .padding(.horizontal, 14)
+            .padding(.bottom, 12)
         }
         .background(
-            RoundedRectangle(cornerRadius: 15)
+            RoundedRectangle(cornerRadius: 20)
                 .fill(Color.white)
-                .shadow(color: Color.black.opacity(0.1), radius: 8, x: 2, y: 5)
+                .shadow(color: Color.black.opacity(0.15), radius: 10, x: 3, y: 5)
         )
         .padding(.horizontal)
-        .scaleEffect(isLiked ? 1.05 : 1.0)
         .animation(.spring(), value: isLiked)
         .onAppear {
+            self.isLiked = product?.liked ?? false
             loadImage()
         }
     }
@@ -83,13 +86,13 @@ struct ProductListItemView: View {
                 Image(uiImage: image)
                     .resizable()
                     .scaledToFit()
-                    .clipShape(RoundedRectangle(cornerRadius: 15))
+                    .clipShape(RoundedRectangle(cornerRadius: 20))
             } else {
                 Image(systemName: "photo.fill")
                     .resizable()
                     .scaledToFit()
                     .foregroundColor(.gray.opacity(0.4))
-                    .frame(width: 160, height: 160)
+                    .frame(width: 180, height: 180)
             }
         }
     }
@@ -103,25 +106,25 @@ struct ProductListItemView: View {
                 DispatchQueue.main.async {
                     self.productImage = image
                 }
-            case .failure(_): print("")
+            case .failure(_): print("Failed to load image")
             }
         }
     }
-}
-
-// **BlurView for Glassmorphism effect**
-struct BlurView: UIViewRepresentable {
-    var style: UIBlurEffect.Style
     
-    func makeUIView(context: Context) -> UIVisualEffectView {
-        let view = UIVisualEffectView(effect: UIBlurEffect(style: style))
-        return view
+    private func updateLikedProducts() {
+        guard let product = product else { return }
+        
+        if isLiked {
+            ProductRepository.shared.saveLikedProduct(product.image)
+        } else {
+            ProductRepository.shared.deleteLikedProduct(product.image)
+        }
+        
+        //Refresh list
+        viewModel.getProducts()
     }
-    
-    func updateUIView(_ uiView: UIVisualEffectView, context: Context) {}
 }
-
 
 #Preview {
-    ProductListItemView(product: nil)
+    ProductView(product: nil, viewModel: ProductListViewModel())
 }
