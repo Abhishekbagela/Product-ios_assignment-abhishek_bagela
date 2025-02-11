@@ -16,7 +16,7 @@ ssh - git clone git@github.com:Abhishekbagela/Product-ios_assignment-abhishek_ba
 
 4: Run the project by cliking on <img width="44" alt="image" src="https://github.com/user-attachments/assets/1e35adc2-9879-418f-ab84-98871a93328b" /> here.
 
-
+App demo youtube video link https://youtube.com/shorts/z0VuUxxtmS8?feature=share
 
 
  
