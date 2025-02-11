@@ -106,30 +106,32 @@ class ProductRepository {
         }
     }
     
-    func saveLikedProduct(_ image: String?) {
-        guard let image else { return }
-        
+    func saveLikedProduct(_ product: Product?) {
+        guard let product else { return }
+        let id = product.getId()
+
         let entity = ProductLikeEntity(context: context)
-        entity.image = image
+        entity.id = id
         
         CoreDataManager.shared.saveContext()
     }
  
-    func deleteLikedProduct(_ image: String?) {
-        guard let image else { return }
+    func deleteLikedProduct(_ product: Product?) {
+        guard let product else { return }
+        let id = product.getId()
         
         let fetchRequest = NSFetchRequest<ProductLikeEntity>(entityName: "ProductLikeEntity")
-        fetchRequest.predicate = NSPredicate(format: "image == %@", image as CVarArg)
+        fetchRequest.predicate = NSPredicate(format: "id == %@", id as CVarArg)
         do {
             if let product = try context.fetch(fetchRequest).first {
                 context.delete(product)
                 CoreDataManager.shared.saveContext()
-                print("Deleted local product with image: \(image)")
+                print("Deleted local product with image: \(id)")
             } else {
-                print("Product not found with image: \(image)")
+                print("Product not found with image: \(id)")
             }
         } catch {
-            print("Error in deleting local product with image: \(image)")
+            print("Error in deleting local product with image: \(id)")
         }
     }
     

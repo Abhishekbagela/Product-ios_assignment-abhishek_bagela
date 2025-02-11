@@ -130,9 +130,9 @@ struct ProductView: View {
         guard let product = product else { return }
         
         if isLiked {
-            ProductRepository.shared.saveLikedProduct(product.image)
+            ProductRepository.shared.saveLikedProduct(product)
         } else {
-            ProductRepository.shared.deleteLikedProduct(product.image)
+            ProductRepository.shared.deleteLikedProduct(product)
         }
         
         //Refresh list

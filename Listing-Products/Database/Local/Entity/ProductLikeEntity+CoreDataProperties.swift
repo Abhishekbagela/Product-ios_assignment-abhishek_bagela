@@ -16,7 +16,7 @@ extension ProductLikeEntity {
         return NSFetchRequest<ProductLikeEntity>(entityName: "ProductLikeEntity")
     }
 
-    @NSManaged public var image: String?
+    @NSManaged public var id: String?
 
 }
 

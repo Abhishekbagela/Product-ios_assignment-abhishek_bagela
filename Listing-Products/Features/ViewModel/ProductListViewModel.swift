@@ -53,7 +53,9 @@ class ProductListViewModel: BaseViewModel {
             self.products = products
         } else {
             products.forEach { product in
-                if likedProducts.contains(where: { $0.image == product.image }) {
+                let id = product.getId()
+                
+                if likedProducts.contains(where: { $0.id == id }) {
                     let prd = product
                     prd.liked = true
                     self.likedProducts.append(prd)
@@ -83,4 +85,3 @@ class ProductListViewModel: BaseViewModel {
     }
     
 }
-

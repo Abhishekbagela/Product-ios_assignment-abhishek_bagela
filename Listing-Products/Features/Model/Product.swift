@@ -24,3 +24,9 @@ class Product: Codable {
         case tax = "tax"
     }
 }
+
+extension Product {
+    func getId() -> String {
+        "\(self.name ?? "")\(self.price ?? 0.0)\(self.type ?? "")\(self.tax ?? 0.0)"
+    }
+}

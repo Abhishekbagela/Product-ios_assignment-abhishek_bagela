@@ -10,6 +10,6 @@
         <attribute name="type" optional="YES" attributeType="String"/>
     </entity>
     <entity name="ProductLikeEntity" representedClassName="ProductLikeEntity" syncable="YES">
-        <attribute name="image" optional="YES" attributeType="String"/>
+        <attribute name="id" optional="YES" attributeType="String"/>
     </entity>
 </model>
