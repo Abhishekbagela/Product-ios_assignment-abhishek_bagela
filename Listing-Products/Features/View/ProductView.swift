@@ -12,35 +12,17 @@ struct ProductView: View {
     @ObservedObject var viewModel: ProductListViewModel
     @State private var productImage: UIImage? = nil
     @State private var isLiked = false
+    @State private var showHeartAnimation = false
     
     var body: some View {
-        VStack(spacing: 10) {
-            ZStack(alignment: .topTrailing) {
-                productImageView
-                    .frame(width: 180, height: 180)
-                    .background(
-                        LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.2), .purple.opacity(0.2)]), startPoint: .topLeading, endPoint: .bottomTrailing)
-                    )
-                    .clipShape(RoundedRectangle(cornerRadius: 20))
-                    .shadow(color: Color.black.opacity(0.15), radius: 8, x: 4, y: 6)
-                    .padding(.top, 10)
-                
-                Button(action: {
-                    withAnimation(.easeInOut(duration: 0.3)) {
-                        isLiked.toggle()
-                        updateLikedProducts()
-                    }
-                }) {
-                    Image(systemName: isLiked ? "heart.fill" : "heart")
-                        .font(.system(size: 24))
-                        .foregroundColor(isLiked ? .red : .white)
-                        .padding(12)
-                        .background(Color.black.opacity(0.5))
-                        .clipShape(Circle())
-                        .shadow(radius: 4)
-                }
-                .padding(12)
-            }
+        HStack(spacing: 15) {
+            productImageView
+                .frame(width: 120, height: 120)
+                .background(
+                    LinearGradient(gradient: Gradient(colors: [.blue.opacity(0.2), .purple.opacity(0.2)]), startPoint: .topLeading, endPoint: .bottomTrailing)
+                )
+                .clipShape(RoundedRectangle(cornerRadius: 15))
+                .shadow(color: Color.black.opacity(0.15), radius: 8, x: 4, y: 6)
             
             VStack(alignment: .leading, spacing: 8) {
                 Text(product?.name ?? "Unknown Product")
@@ -64,18 +46,51 @@ struct ProductView: View {
                         .foregroundColor(.gray)
                 }
             }
-            .padding(.horizontal, 14)
-            .padding(.bottom, 12)
+            .padding(.vertical, 10)
+            
+            Button(action: {
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    isLiked.toggle()
+                    updateLikedProducts()
+                    if isLiked {
+                        showHeartAnimation = true
+                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                            showHeartAnimation = false
+                        }
+                    }
+                }
+            }) {
+                ZStack {
+                    Image(systemName: isLiked ? "heart.fill" : "heart")
+                        .font(.system(size: 24))
+                        .foregroundColor(isLiked ? .red : .gray)
+                        .padding(10)
+                        .background(Color.white)
+                        .clipShape(Circle())
+                        .shadow(radius: 4)
+                    
+                    if showHeartAnimation {
+                        Image(systemName: "heart.fill")
+                            .font(.system(size: 50))
+                            .foregroundColor(.red)
+                            .scaleEffect(1.2)
+                            .opacity(0)
+                            .animation(.easeInOut(duration: 0.5).repeatCount(1, autoreverses: false), value: showHeartAnimation)
+                    }
+                }
+            }
         }
+        .padding()
         .background(
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 15)
                 .fill(Color.white)
                 .shadow(color: Color.black.opacity(0.15), radius: 10, x: 3, y: 5)
         )
         .padding(.horizontal)
-        .animation(.spring(), value: isLiked)
         .onAppear {
-            self.isLiked = product?.liked ?? false
+            if let liked = product?.liked {
+                self.isLiked = liked
+            }
             loadImage()
         }
     }
