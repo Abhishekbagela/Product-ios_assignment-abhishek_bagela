@@ -113,7 +113,7 @@ struct ProductView: View {
     }
     
     private func loadImage() {
-        guard let imageUrl = product?.image else { return }
+        guard let imageUrl = product?.image, !imageUrl.isEmpty else { return }
         
         APIManager.shared.downloadImage(from: imageUrl) { (result: Result<UIImage, APIError>) in
             switch result {
