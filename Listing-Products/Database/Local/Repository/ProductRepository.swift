@@ -34,7 +34,7 @@ class ProductRepository {
                 let encodedData = try JSONEncoder().encode(imageDataArray) // Encode [Data] into Data
                 entity.images = encodedData
             } catch {
-                print(" Failed to encode images: \(error.localizedDescription)")
+                debugPrint(" Failed to encode images: \(error.localizedDescription)")
             }
         }
         
@@ -61,11 +61,11 @@ class ProductRepository {
             do {
                 return try context.fetch(fetchRequest)
             } catch {
-                print("Error fetching unsynced products: \(error.localizedDescription)")
+                debugPrint("Error fetching unsynced products: \(error.localizedDescription)")
                 return []
             }
         } else {
-            print("ProductEntity does not exist yet.")
+            debugPrint("ProductEntity does not exist yet.")
             return []
         }
     }
@@ -82,10 +82,10 @@ class ProductRepository {
                 product.serverId = serverId
                 
                 CoreDataManager.shared.saveContext()
-                print("Updated local product with server ID: \(serverId)")
+                debugPrint("Updated local product with server ID: \(serverId)")
             }
         } catch {
-            print("Error updating product: \(error)")
+            debugPrint("Error updating product: \(error)")
         }
     }
     
@@ -101,7 +101,7 @@ class ProductRepository {
         do {
             return try context.fetch(fetchRequest)
         } catch {
-            print("Error fetching unsynced products: \(error.localizedDescription)")
+            debugPrint("Error fetching unsynced products: \(error.localizedDescription)")
             return []
         }
     }
@@ -125,13 +125,14 @@ class ProductRepository {
         do {
             if let product = try context.fetch(fetchRequest).first {
                 context.delete(product)
+                
                 CoreDataManager.shared.saveContext()
-                print("Deleted local product with image: \(id)")
+                debugPrint("Deleted local product with id: \(id)")
             } else {
-                print("Product not found with image: \(id)")
+                debugPrint("Product not found with id: \(id)")
             }
         } catch {
-            print("Error in deleting local product with image: \(id)")
+            debugPrint("Error in deleting local product with id: \(id)")
         }
     }
     
