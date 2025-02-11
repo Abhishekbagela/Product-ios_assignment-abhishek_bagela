@@ -65,9 +65,6 @@ class ProductListViewModel: BaseViewModel {
                 }
             }
             
-            print("xxxx liked \(self.likedProducts.count)")
-            print("xxxx nonLiked \(nonLiked.count)")
-            
             self.products = self.likedProducts + nonLiked
         }
     }
