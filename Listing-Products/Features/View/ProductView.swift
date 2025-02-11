@@ -36,8 +36,9 @@ struct ProductView: View {
                 
                 HStack {
                     Text("$\(String(format: "%.2f", product?.price ?? 0.00))")
-                        .font(.system(size: 22, weight: .bold, design: .rounded))
+                        .font(.system(size: 20, weight: .bold, design: .rounded))
                         .foregroundColor(.green)
+                        .lineLimit(1)
                     
                     Spacer()
                     
