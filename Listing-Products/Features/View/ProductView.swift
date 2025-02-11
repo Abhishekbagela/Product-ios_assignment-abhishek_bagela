@@ -34,20 +34,18 @@ struct ProductView: View {
                     .font(.system(size: 14, weight: .medium, design: .rounded))
                     .foregroundColor(.gray)
                 
-                HStack {
-                    Text("$\(String(format: "%.2f", product?.price ?? 0.00))")
-                        .font(.system(size: 20, weight: .bold, design: .rounded))
-                        .foregroundColor(.green)
-                        .lineLimit(1)
-                    
-                    Spacer()
-                    
-                    Text("Tax: $\(String(format: "%.2f", product?.tax ?? 0.00))")
-                        .font(.footnote)
-                        .foregroundColor(.gray)
-                }
+                Text("$\(String(format: "%.2f", product?.price ?? 0.00))")
+                    .font(.system(size: 20, weight: .bold, design: .rounded))
+                    .foregroundColor(.green)
+                    .lineLimit(1)
+                
+                Text("Tax: $\(String(format: "%.2f", product?.tax ?? 0.00))")
+                    .font(.footnote)
+                    .foregroundColor(.gray)
             }
             .padding(.vertical, 10)
+            
+            Spacer()
             
             Button(action: {
                 withAnimation(.easeInOut(duration: 0.3)) {
@@ -81,6 +79,7 @@ struct ProductView: View {
                 }
             }
         }
+        .frame(maxWidth: .infinity)
         .padding()
         .background(
             RoundedRectangle(cornerRadius: 15)
