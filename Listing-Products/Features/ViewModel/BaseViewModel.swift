@@ -20,16 +20,22 @@ class BaseViewModel: ObservableObject {
     }
     
     func showMessage(type: MessageType, message: String) {
-        self.msgTitle = type.rawValue
-        self.message = message
-        self.showError = true
+        DispatchQueue.main.async {
+            self.msgTitle = type.rawValue
+            self.message = message
+            self.showError = true
+        }
     }
     
     func startLoading() {
-        loading = true
+        DispatchQueue.main.async {
+            self.loading = true
+        }
     }
     
     func stopLoading() {
-        loading = false
+        DispatchQueue.main.async {
+            self.loading = false
+        }
     }
 }

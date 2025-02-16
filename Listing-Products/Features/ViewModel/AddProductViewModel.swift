@@ -42,9 +42,9 @@ class AddProductViewModel: BaseViewModel {
             self.stopLoading()
             
             if (success) {
-                DispatchQueue.main.async {
-                    self.showMessage(type: .success, message: "Product Added Successfully")
-                }                
+                self.showMessage(type: .success, message: "Product Added Successfully")
+            } else {
+                self.showMessage(type: .error, message: "Something went wrong. Please try again later.")
             }
         }
     }
