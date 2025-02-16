@@ -126,7 +126,7 @@ struct AddProductView: View {
                                 .padding(.horizontal, 20)
                         }
                         .padding(.top, 20)
-                        .disabled(viewModel.isSubmitDisabled())
+                        .disabled(viewModel.isSubmitDisabled() || viewModel.loading)
                     }
                     .padding()
                 }
