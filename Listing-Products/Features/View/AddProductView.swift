@@ -54,14 +54,11 @@ struct AddProductView: View {
                         // Text Fields and Validation
                         VStack(alignment: .leading, spacing: 10) {
                             // Product Name
-                            Text("Product Name")
-                                .font(.headline)
-                            TextField("Enter product name", text: $viewModel.productName)
-                                .padding()
-                                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-                                .onChange(of: viewModel.productName) { _ in
-                                    viewModel.validateProductName()
-                                }
+                            TextFieldWithFieldLabelView(label: "Product Name",
+                                                        placeholder: "Enter product name",
+                                                        text: $viewModel.productName) { _ in
+                                viewModel.showProductNameInvalidMsg()
+                            }
                             if let productNameError = viewModel.errorMessages["productName"] {
                                 Text(productNameError)
                                     .foregroundColor(.red)
@@ -81,15 +78,11 @@ struct AddProductView: View {
                             .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
                             
                             // Price
-                            Text("Price ($)")
-                                .font(.headline)
-                            TextField("Enter price", text: $viewModel.price)
-                                .keyboardType(.decimalPad)
-                                .padding()
-                                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-                                .onChange(of: viewModel.price) { _ in
-                                    viewModel.validatePrice()
-                                }
+                            TextFieldWithFieldLabelView(label: "Price ($)",
+                                                        placeholder: "Enter price",
+                                                        text: $viewModel.price) { _ in
+                                viewModel.showPriceInvalidMsg()
+                            }
                             if let priceError = viewModel.errorMessages["price"] {
                                 Text(priceError)
                                     .foregroundColor(.red)
@@ -97,15 +90,11 @@ struct AddProductView: View {
                             }
                             
                             // Tax
-                            Text("Tax (%)")
-                                .font(.headline)
-                            TextField("Enter tax", text: $viewModel.tax)
-                                .keyboardType(.decimalPad)
-                                .padding()
-                                .background(RoundedRectangle(cornerRadius: 8).stroke(Color.gray, lineWidth: 1))
-                                .onChange(of: viewModel.tax) { _ in
-                                    viewModel.validateTax()
-                                }
+                            TextFieldWithFieldLabelView(label: "Tax (%)",
+                                                        placeholder: "Enter tax",
+                                                        text: $viewModel.tax) { _ in
+                                viewModel.showTaxInvalidMsg()
+                            }
                             if let taxError = viewModel.errorMessages["tax"] {
                                 Text(taxError)
                                     .foregroundColor(.red)

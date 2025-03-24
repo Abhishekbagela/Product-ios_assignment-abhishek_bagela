@@ -51,24 +51,24 @@ class AddProductViewModel: BaseViewModel {
     
     //MARK: Validation methods
     
-    func validateProductName() {
-        if productName.isEmpty {
+    func showProductNameInvalidMsg() {
+        if ValidationUtility.validateName(self.productName) {
             errorMessages["productName"] = "Product name cannot be empty"
         } else {
             errorMessages["productName"] = nil
         }
     }
     
-    func validatePrice() {
-        if price.isEmpty || Double(price) == nil {
+    func showPriceInvalidMsg() {
+        if ValidationUtility.validatePrice(self.price) {
             errorMessages["price"] = "Please enter a valid price"
         } else {
             errorMessages["price"] = nil
         }
     }
     
-    func validateTax() {
-        if tax.isEmpty || Double(tax) == nil {
+    func showTaxInvalidMsg() {
+        if ValidationUtility.validateTax(self.tax) {
             errorMessages["tax"] = "Please enter a valid tax percentage"
         } else {
             errorMessages["tax"] = nil
@@ -77,12 +77,50 @@ class AddProductViewModel: BaseViewModel {
     
     func isSubmitDisabled() -> Bool {
         // Disable if ANY error message exists (non-empty)
-        return errorMessages.values.contains(where: { !$0.isEmpty }) || isAnyFieldEmpty()
+        return errorMessages.values.contains(where: { !$0.isEmpty }) || ValidationUtility.isAnyTextFieldEmpty(productName, price, tax)
+    }
+    
+}
+
+struct ValidationUtility: ValidationUtilityProtocol {
+    static func validatePrice(_ price: String) -> Bool {
+        if (price.isEmpty || Double(price) == nil || (Double(price) ?? 0) <= 0) {
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    static func validateName(_ name: String) -> Bool {
+        if (name.isEmpty || name.count > 2) {
+            return false
+        } else {
+            return true
+        }
+    }
+    
+    static func validateTax(_ tax: String) -> Bool {
+        if (tax.isEmpty || Double(tax) == nil) {
+            return false
+        } else {
+            return true
+        }
     }
     
     /// Checks if any required fields are empty
-    private func isAnyFieldEmpty() -> Bool {
-        return productName.isEmpty || price.isEmpty || tax.isEmpty
+    static func isAnyTextFieldEmpty(_ textFields: String...) -> Bool {
+        if textFields.allSatisfy({ $0.isEmpty == true }) {
+            return true
+        } else {
+            return false
+        }
     }
+}
+
+protocol ValidationUtilityProtocol {
     
+    static func validatePrice(_ price: String) -> Bool
+    static func validateName(_ name: String) -> Bool
+    static func validateTax(_ tax: String) -> Bool
+    static func isAnyTextFieldEmpty(_ textFields: String...) -> Bool
 }
